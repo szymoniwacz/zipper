@@ -10,7 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_06_14_184702) do
+ActiveRecord::Schema[7.0].define(version: 2024_07_02_115422) do
+  create_table "file_archives", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "file_path"
+    t.string "zipfile_path"
+    t.string "password"
+    t.string "status"
+    t.string "error"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_file_archives_on_user_id"
+  end
+
   create_table "file_resources", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "file"
@@ -32,5 +44,6 @@ ActiveRecord::Schema[7.0].define(version: 2024_06_14_184702) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "file_archives", "users"
   add_foreign_key "file_resources", "users"
 end
