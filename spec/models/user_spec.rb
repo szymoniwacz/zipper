@@ -47,6 +47,10 @@ RSpec.describe User, type: :model do
       expect(User.devise_modules).to include(:recoverable)
     end
 
+    it "should include :rememberable module" do
+      expect(User.devise_modules).to include(:rememberable)
+    end
+
     it "should include :validatable module" do
       expect(User.devise_modules).to include(:validatable)
     end
