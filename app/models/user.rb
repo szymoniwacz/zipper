@@ -13,6 +13,8 @@ class User < ApplicationRecord
 
   validates :email, presence: true, uniqueness: true
 
+  has_many :file_resources
+
   before_save :ensure_authentication_token
 
   def ensure_authentication_token
