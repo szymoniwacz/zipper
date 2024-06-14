@@ -37,6 +37,7 @@ module V1
           user.save!
           token = JWT.encode(user.jwt_payload, Rails.application.secrets.secret_key_base, "HS256")
           status 200
+
           { token: }
         else
           error!("Unauthorized", 401)
