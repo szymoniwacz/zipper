@@ -25,6 +25,27 @@ describe "V1::Users API", type: :request do
     end
   end
 
+  describe "POST /api/v1/users/login" do
+    let!(:user) { create(:user, email: "test@example.com", password: "password123") }
+
+    context "with valid credentials" do
+      it "returns authentication token" do
+        post "/api/v1/users/login", params: { email: "test@example.com", password: "password123" }
+
+        expect(response).to have_http_status(:ok)
+        expect(json_response["token"]).to be_present
+      end
+    end
+
+    context "with invalid credentials" do
+      it "returns unauthorized" do
+        post "/api/v1/users/login", params: { email: "invalid@example.com", password: "invalidpassword" }
+
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
+  end
+
   def json_response
     JSON.parse(response.body)
   end

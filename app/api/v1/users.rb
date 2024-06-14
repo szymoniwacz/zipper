@@ -12,9 +12,28 @@ module V1
       post :register do
         user = User.new(params)
         if user.save
-          { status: :success, message: "User registered successfully." }
+          status 201
+          { message: "User registered successfully." }
         else
           error!(user.errors.messages, 422)
+        end
+      end
+
+      desc "Login"
+      params do
+        requires :email, type: String, desc: "Email address"
+        requires :password, type: String, desc: "Password"
+      end
+      post :login do
+        user = User.find_for_authentication(email: params[:email])
+        if user&.valid_password?(params[:password])
+          user.ensure_authentication_token
+          user.save!
+          token = JWT.encode(user.jwt_payload, Rails.application.secrets.secret_key_base, "HS256")
+          status 200
+          { token: token }
+        else
+          error!("Unauthorized", 401)
         end
       end
     end
