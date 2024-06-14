@@ -1,0 +1,8 @@
+current directory: /Users/szymoniwacz/Projects/zipper/vendor/bundle/ruby/3.1.0/gems/nio4r-2.7.3/ext/nio4r
+/Users/szymoniwacz/.rvm/rubies/ruby-3.1.0/bin/ruby -I /Users/szymoniwacz/.rvm/rubies/ruby-3.1.0/lib/ruby/3.1.0 -r ./siteconf20240727-69221-oen404.rb extconf.rb
+current directory: /Users/szymoniwacz/Projects/zipper/vendor/bundle/ruby/3.1.0/gems/nio4r-2.7.3/ext/nio4r
+make DESTDIR\= clean
+current directory: /Users/szymoniwacz/Projects/zipper/vendor/bundle/ruby/3.1.0/gems/nio4r-2.7.3/ext/nio4r
+make DESTDIR\=
+current directory: /Users/szymoniwacz/Projects/zipper/vendor/bundle/ruby/3.1.0/gems/nio4r-2.7.3/ext/nio4r
+make DESTDIR\= install

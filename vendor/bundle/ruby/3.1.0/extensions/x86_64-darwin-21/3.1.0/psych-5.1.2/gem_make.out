@@ -1,0 +1,8 @@
+current directory: /Users/szymoniwacz/Projects/zipper/vendor/bundle/ruby/3.1.0/gems/psych-5.1.2/ext/psych
+/Users/szymoniwacz/.rvm/rubies/ruby-3.1.0/bin/ruby -I /Users/szymoniwacz/.rvm/rubies/ruby-3.1.0/lib/ruby/3.1.0 -r ./siteconf20240727-69221-ay5pn2.rb extconf.rb
+current directory: /Users/szymoniwacz/Projects/zipper/vendor/bundle/ruby/3.1.0/gems/psych-5.1.2/ext/psych
+make DESTDIR\= clean
+current directory: /Users/szymoniwacz/Projects/zipper/vendor/bundle/ruby/3.1.0/gems/psych-5.1.2/ext/psych
+make DESTDIR\=
+current directory: /Users/szymoniwacz/Projects/zipper/vendor/bundle/ruby/3.1.0/gems/psych-5.1.2/ext/psych
+make DESTDIR\= install
