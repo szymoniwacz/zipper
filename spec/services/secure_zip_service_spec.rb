@@ -9,7 +9,7 @@ RSpec.describe SecureZipService do
   describe "#call" do
     context "when successfully creating a ZIP file" do
       it "returns a Result with zipfile_path and password" do
-        zip_service = described_class.new(user: user, file: file)
+        zip_service = described_class.new(user:, file:)
 
         result = zip_service.call
 
@@ -25,7 +25,7 @@ RSpec.describe SecureZipService do
         allow_any_instance_of(described_class).to receive(:create_zip_file).and_raise(StandardError,
                                                                                       "File creation failed")
 
-        zip_service = described_class.new(user: user, file: file)
+        zip_service = described_class.new(user:, file:)
 
         result = zip_service.call
 

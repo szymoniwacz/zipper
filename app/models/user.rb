@@ -23,6 +23,6 @@ class User < ApplicationRecord
   end
 
   def jwt_payload(expiration = 1.day.from_now)
-    { email: email, authentication_token: authentication_token, exp: expiration.to_i }
+    { email:, authentication_token:, exp: expiration.to_i }
   end
 end

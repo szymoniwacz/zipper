@@ -15,9 +15,9 @@ RSpec.describe "V1::Files API", type: :request do
 
   describe "GET /api/v1/files" do
     it "returns a list of files for the logged-in user" do
-      create_list(:file_resource, 3, user: user)
+      create_list(:file_resource, 3, user:)
 
-      get "/api/v1/files", headers: headers
+      get("/api/v1/files", headers:)
 
       expect(response).to have_http_status(:ok)
       expect(JSON.parse(response.body).size).to eq(3)
@@ -30,12 +30,12 @@ RSpec.describe "V1::Files API", type: :request do
     context "when file uploaded successfully" do
       let(:zipfile_path) { "zipfile_path" }
       let(:generated_password) { "generated_password" }
-      let(:success_response) { Result.new({ zipfile_path: zipfile_path, password: generated_password }) }
+      let(:success_response) { Result.new({ zipfile_path:, password: generated_password }) }
 
       before { allow_any_instance_of(SecureZipService).to receive(:call).and_return(success_response) }
 
       it "uploads a file and returns a download link and password" do
-        post "/api/v1/files", params: { file: file }, headers: headers
+        post("/api/v1/files", params: { file: }, headers:)
 
         expect(response).to have_http_status(:created)
 
@@ -53,7 +53,7 @@ RSpec.describe "V1::Files API", type: :request do
       before { allow_any_instance_of(SecureZipService).to receive(:call).and_return(error_response) }
 
       it "uploads a file and returns a download link and password" do
-        post "/api/v1/files", params: { file: file }, headers: headers
+        post("/api/v1/files", params: { file: }, headers:)
 
         expect(response).to have_http_status(:created)
 

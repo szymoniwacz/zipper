@@ -31,7 +31,7 @@ class SecureZipService
   end
 
   def zipfile_buffer
-    @zipfile_buffer ||= Zip::OutputStream.write_buffer(encrypter: encrypter) do |zos|
+    @zipfile_buffer ||= Zip::OutputStream.write_buffer(encrypter:) do |zos|
       zos.put_next_entry(File.basename(file[:filename]))
       zos.write(file[:tempfile].read)
     end

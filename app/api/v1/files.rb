@@ -17,7 +17,7 @@ module V1
       end
       post do
         file = params[:file]
-        result = SecureZipService.new(user: current_user, file: file).call
+        result = SecureZipService.new(user: current_user, file:).call
 
         return handle_error(result.error) unless result.success?
 

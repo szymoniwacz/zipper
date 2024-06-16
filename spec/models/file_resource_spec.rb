@@ -14,7 +14,7 @@ RSpec.describe FileResource, type: :model do
 
   describe "validations" do
     it "validates presence of file" do
-      file_resource = build(:file_resource, user: user, file: nil)
+      file_resource = build(:file_resource, user:, file: nil)
       file_resource.valid?
       expect(file_resource.errors[:file]).to include("can't be blank")
     end
