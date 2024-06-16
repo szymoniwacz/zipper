@@ -54,6 +54,7 @@ gem "carrierwave", "~> 3.0"
 gem "devise", "~> 4.9"
 gem "devise-jwt", "~> 0.11"
 gem "grape", "~> 2.0"
+gem "grape-entity", "~> 1.0.0"
 gem "rubyzip", "3.0.0.alpha"
 
 group :development, :test do

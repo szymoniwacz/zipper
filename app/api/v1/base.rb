@@ -16,8 +16,15 @@ module V1
       def warden
         env["warden"]
       end
+
+      def handle_error(error)
+        # TODO: Add more error info like user id, file name.
+        Rails.logger.error("An error occurred while archiving file: #{error.message}")
+        { error: error.message }
+      end
     end
 
     mount V1::Users
+    mount V1::Files
   end
 end
