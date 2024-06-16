@@ -2,6 +2,8 @@
 
 module V1
   class Base < Grape::API
+    use Warden::Manager
+
     version "v1", using: :path
 
     helpers do
@@ -10,11 +12,7 @@ module V1
       end
 
       def current_user
-        @current_user ||= warden.authenticate(scope: :user)
-      end
-
-      def warden
-        env["warden"]
+        @current_user ||= env["warden"].authenticate(scope: :user)
       end
 
       def handle_error(error)
@@ -26,5 +24,19 @@ module V1
 
     mount V1::Users
     mount V1::Files
+
+    add_swagger_documentation(
+      api_version: "v1",
+      base_path: "/api",
+      mount_path: "/swagger_doc",
+      hide_documentation_path: true,
+      hide_format: true,
+      format: :json,
+      info: {
+        title: "Zipper API V1",
+        description: "API documentation for the Files endpoint"
+      },
+      models: [Entities::FileResource]
+    )
   end
 end
