@@ -4,14 +4,8 @@ module V1
   class Users < Grape::API
     resource :users do
       desc "Register a new user", {
-        consumes: [ "application/json" ],
-        produces: [ "application/json" ],
-        headers: {
-          "Authorization" => {
-            description: "Bearer token",
-            required: false
-          }
-        }
+        consumes: ["application/json"],
+        produces: ["application/json"]
       }
       params do
         requires :email, type: String, desc: "Email address"
@@ -29,14 +23,8 @@ module V1
       end
 
       desc "Login", {
-        consumes: [ "application/json" ],
-        produces: [ "application/json" ],
-        headers: {
-          "Authorization" => {
-            description: "Bearer token",
-            required: false
-          }
-        }
+        consumes: ["application/json"],
+        produces: ["application/json"]
       }
       params do
         requires :email, type: String, desc: "Email address"
@@ -49,7 +37,7 @@ module V1
           user.save!
           token = JWT.encode(user.jwt_payload, Rails.application.secrets.secret_key_base, "HS256")
           status 200
-          { token: token }
+          { token: }
         else
           error!("Unauthorized", 401)
         end

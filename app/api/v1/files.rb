@@ -5,15 +5,31 @@ module V1
     before { authenticate_user! }
 
     resource :files do
-      desc "List files of the current user"
+      desc "List files of the current user" do
+        success Entities::FileResource
+        headers "Authorization" => {
+          description: "Bearer token",
+          required: true
+        }
+      end
       get do
         files = current_user.file_resources
         present files, with: ::Entities::FileResource, domain: request.base_url
       end
 
-      desc "Upload a file"
+      desc "Upload a file" do
+        success type: Hash do
+          property :link, type: String, desc: "URL to the zipped file"
+          property :password, type: String, desc: "Password for the zipped file"
+        end
+        consumes "multipart/form-data"
+        headers "Authorization" => {
+          description: "Bearer token",
+          required: true
+        }
+      end
       params do
-        requires :file, type: File
+        requires :file, type: File, desc: "File to upload"
       end
       post do
         file = params[:file]
