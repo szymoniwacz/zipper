@@ -44,7 +44,16 @@ module V1
         end
       end
 
-      desc "Login"
+      desc "Login", {
+        consumes: [ "application/json" ],
+        produces: [ "application/json" ],
+        headers: {
+          "Authorization" => {
+            description: "Bearer token",
+            required: false
+          }
+        }
+      }
       params do
         requires :email, type: String, desc: "Email address"
         requires :password, type: String, desc: "Password"
@@ -56,7 +65,7 @@ module V1
           user.save!
           token = JWT.encode(user.jwt_payload, Rails.application.secrets.secret_key_base, "HS256")
           status 200
-          { token: }
+          { token: token }
         else
           error!("Unauthorized", 401)
         end
