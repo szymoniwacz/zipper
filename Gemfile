@@ -55,6 +55,9 @@ gem "devise", "~> 4.9"
 gem "devise-jwt", "~> 0.11"
 gem "grape", "~> 2.0"
 gem "grape-entity", "~> 1.0.0"
+gem "grape-swagger", "~> 2.1"
+gem "grape-swagger-entity", "~> 0.5"
+gem "grape-swagger-rails", "~> 0.5"
 gem "rubyzip", "3.0.0.alpha"
 
 group :development, :test do
