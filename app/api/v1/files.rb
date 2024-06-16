@@ -12,6 +12,7 @@ module V1
           required: true
         }
       end
+
       get do
         files = current_user.file_resources
         present files, with: ::Entities::FileResource, domain: request.base_url
