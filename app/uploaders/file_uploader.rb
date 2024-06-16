@@ -8,6 +8,10 @@ class FileUploader < CarrierWave::Uploader::Base
   end
 
   def cache_dir
-    Rails.root.join('tmp', 'uploads', 'test')
+    Rails.root.join("tmp", "uploads", "test")
+  end
+
+  def extension_white_list
+    %w[zip] # Allow only zip files for upload
   end
 end
