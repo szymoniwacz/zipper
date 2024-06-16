@@ -40,6 +40,7 @@ RSpec.describe "V1::Files API", type: :request do
         expect(response).to have_http_status(:created)
 
         response_body = JSON.parse(response.body)
+
         expect(response_body["link"]).to include(link)
         expect(response_body["password"]).to eq(password)
       end

@@ -26,6 +26,12 @@ module V1
         Rails.logger.error("An error occurred while archiving file: #{error.message}")
         { error: error.message }
       end
+
+      def handle_error(error)
+        # TODO: Add more error info like user id, file name.
+        Rails.logger.error("An error occurred while archiving file: #{error.message}")
+        { error: error.message }
+      end
     end
 
     mount V1::Users
