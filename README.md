@@ -1,24 +1,29 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+This README documents the necessary steps to get the application up and running.
 
-Things you may want to cover:
+## Ruby Version
+- Ensure you are using Ruby version 2.7.2 or later.
 
-* Ruby version
+## System Dependencies
+- MySQL
 
-* System dependencies
+## Configuration
+1. Copy the `.env.example` file to `.env` and update the environment variables as needed.
+2. Ensure your `database.yml` is properly configured to connect to your MySQL database.
 
-* Configuration
+## Database Creation
+Run the following commands to create the database:
+```sh
+rails db:create
+rails db:migrate
+```
 
-* Database creation
+## How to Run the Test Suite
+Run the RSpec test suite:
+```sh
+rspec spec
+```
 
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+## Additional Information
+For any additional setup or configuration, refer to the official Rails documentation or the project's wiki.
