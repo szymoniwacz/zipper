@@ -24,6 +24,7 @@ module V1
 
     mount V1::Users
     mount V1::Files
+    mount V1::FileArchives
 
     add_swagger_documentation(
       api_version: "v1",
