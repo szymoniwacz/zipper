@@ -1,55 +1,49 @@
 # frozen_string_literal: true
 
-require "rails_helper"
-require "zip"
+require 'rails_helper'
+require 'zip'
 
 RSpec.describe SecureZipService, type: :service do
   let(:user) { create(:user) }
-  let(:file) { { filename: "example.txt", tempfile: File.open(Rails.root.join("spec/fixtures/example.txt")) } }
-  let(:base_url) { "http://example.com" }
-  let(:service) { SecureZipService.new(user:, file:, base_url:) }
+  let(:file_path) { Rails.root.join('tmp', 'testfile.txt').to_s }
+  let(:file_archive) { create(:file_archive, user: user, file_path: file_path) }
+  let(:service) { described_class.new(file_archive_id: file_archive.id) }
 
-  describe "#initialize" do
-    it "initializes with a user, file, and base_url" do
-      expect(service.instance_variable_get(:@user)).to eq(user)
-      expect(service.instance_variable_get(:@file)).to eq(file)
-      expect(service.instance_variable_get(:@base_url)).to eq(base_url)
+  before do
+    # Create a test file
+    File.open(file_path, 'w') { |f| f.write('This is a test file') }
+  end
+
+  after do
+    # Clean up the test file
+    File.delete(file_path) if File.exist?(file_path)
+  end
+
+  describe '#call' do
+    it 'calls create_zip_file and updates the file archive' do
+      expect(service).to receive(:create_zip_file).and_call_original
+      service.call
+      file_archive.reload
+      expect(file_archive.status).to eq('completed')
+      expect(file_archive.zipfile_path).not_to be_nil
     end
   end
 
-  describe "#call" do
-    context "with valid input" do
-      it "creates a zip file and returns the file details" do
-        result = service.call
-        expect(result.success?).to be(true)
-        expect(result.value[:link]).to be_present
-        expect(result.value[:password]).to be_present
-      end
-    end
-
-    context "with an error during file creation" do
-      before do
-        allow(service).to receive(:create_zip_file).and_raise(StandardError, "Test error")
-      end
-
-      it "handles the error and returns an error message" do
-        result = service.call
-        expect(result.success?).to be(false)
-        expect(result.error.message).to eq("Test error")
-      end
-    end
-  end
-
-  describe "#create_zip_file" do
-    it "creates a zip file and updates the file resource" do
-      allow(service).to receive(:generated_password).and_return("testpassword")
-      file_resource = service.send(:file_resource)
-      expect(file_resource).to receive(:update!).with(file: instance_of(File))
-
+  describe '#create_zip_file' do
+    it 'creates a zip file and updates the file archive' do
       service.send(:create_zip_file)
+      file_archive.reload
+      expect(file_archive.status).to eq('completed')
+      expect(file_archive.zipfile_path).not_to be_nil
 
-      # Check that the password is set correctly
-      expect(service.send(:generated_password)).to eq("testpassword")
+      # Clean up the created zip file
+      File.delete(file_archive.zipfile_path) if File.exist?(file_archive.zipfile_path)
+    end
+  end
+
+  describe '#zipfile_name' do
+    it 'returns the correct zipfile name' do
+      expect(service.send(:zipfile_name)).to eq('testfile')
     end
   end
 
@@ -60,27 +54,26 @@ RSpec.describe SecureZipService, type: :service do
     end
   end
 
-  describe "#encrypter" do
-    it "creates an encrypter with the generated password" do
-      generated_password = service.send(:generated_password)
+  describe '#encrypter' do
+    it 'returns a Zip::TraditionalEncrypter with the file archive password' do
       encrypter = service.send(:encrypter)
       expect(encrypter).to be_a(Zip::TraditionalEncrypter)
-      expect(service.send(:generated_password)).to eq(generated_password)
+      expect(encrypter.instance_variable_get(:@password)).to eq(file_archive.password)
     end
   end
 
-  describe "#generated_password" do
-    it "generates a random password" do
-      password = service.send(:generated_password)
-      expect(password).to be_a(String)
-      expect(password.length).to eq(20)
+  describe '#generate_zip_file_path' do
+    it 'generates a valid zip file path in the uploads directory' do
+      path = service.send(:generate_zip_file_path)
+      expect(path).to start_with(Rails.root.join('uploads', 'zips').to_s)
+      expect(path).to end_with('.zip')
     end
   end
 
   describe "#zipfile_name" do
     it "returns the base name of the file without extension" do
       zipfile_name = service.send(:zipfile_name)
-      expect(zipfile_name).to eq("example")
+      expect(zipfile_name).to eq("testfile")
     end
   end
 
