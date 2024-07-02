@@ -3,6 +3,8 @@
 require "rails_helper"
 require "sidekiq/testing"
 
+Sidekiq::Testing.fake!
+
 RSpec.describe "V1::Files API", type: :request do
   let(:user) { create(:user) }
   let(:token) do
@@ -31,7 +33,7 @@ RSpec.describe "V1::Files API", type: :request do
     context "when file uploaded successfully" do
       it "uploads a file and enqueues SecureZipServiceWorker" do
         expect {
-          post("/api/v1/files", params: { file: file }, headers: headers)
+          post("/api/v1/files", params: { file: }, headers:)
         }.to change(SecureZipServiceWorker.jobs, :size).by(1)
 
         expect(response).to have_http_status(:created)

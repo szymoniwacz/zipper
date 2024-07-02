@@ -184,6 +184,7 @@ GEM
     mini_magick (4.13.2)
     mini_mime (1.1.5)
     minitest (5.24.1)
+    mock_redis (0.44.0)
     msgpack (1.7.2)
     multi_json (1.15.0)
     mustermann (3.0.0)
@@ -363,6 +364,7 @@ DEPENDENCIES
   grape-swagger-rails (~> 0.5)
   importmap-rails
   jbuilder
+  mock_redis
   mysql2 (~> 0.5)
   pry-rails (~> 0.3)
   puma (~> 5.0)
