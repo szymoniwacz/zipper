@@ -26,8 +26,11 @@ module V1
 
       desc "Upload a file" do
         success type: Hash do
-          property :link, type: String, desc: "URL to the zipped file"
-          property :password, type: String, desc: "Password for the zipped file"
+          property :status, type: String, desc: "Status of the file archive"
+          property :link, type: String, desc: "URL to the zipped file", nullable: true
+          property :password, type: String, desc: "Password for the zipped file", nullable: true
+          property :error, type: String, desc: "Error message if any", nullable: true
+          property :archive_url, type: String, desc: "URL to check the status of the file archive"
         end
         consumes "multipart/form-data"
         headers "Authorization" => {
@@ -39,11 +42,31 @@ module V1
         requires :file, type: File, desc: "File to upload"
       end
       post do
-        result = SecureZipService.new(user: current_user, file: params[:file], base_url: request.base_url).call
+        # OLD:
+        # result = SecureZipService.new(user: current_user, file: params[:file], base_url: request.base_url).call
 
-        return result.value if result.success?
+        # return result.value if result.success?
 
-        error!(result.error, 422)
+        # error!(result.error, 422)
+
+        uploaded_file = params[:file]
+        file_path = Rails.root.join('tmp', SecureRandom.uuid, uploaded_file[:filename])
+        FileUtils.mkdir_p(File.dirname(file_path))
+        File.open(file_path, 'wb') do |f|
+          f.write(uploaded_file[:tempfile].read)
+        end
+
+        file_archive = FileArchive.create!(
+          user: current_user,
+          file_path: file_path.to_s,
+          status: 'processing'
+        )
+
+        SecureZipServiceWorker.perform_async(file_archive.id)
+
+        archive_url = "#{request.base_url}/api/v1/file_archives/#{file_archive.id}"
+
+        { status: 'processing', link: nil, password: nil, archive_url: archive_url }
       end
     end
   end
