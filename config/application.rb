@@ -37,5 +37,13 @@ module Zipper
     config.generators.system_tests = nil
 
     config.autoload_paths << Rails.root.join("lib/devise")
+
+    Sidekiq.configure_server do |config|
+      config.redis = { url: 'redis://localhost:6379/0' }
+    end
+
+    Sidekiq.configure_client do |config|
+      config.redis = { url: 'redis://localhost:6379/0' }
+    end
   end
 end
