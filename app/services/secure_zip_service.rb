@@ -3,31 +3,39 @@
 require "zip"
 
 class SecureZipService
-  def initialize(user:, file:)
+  def initialize(user:, file:, base_url:)
     @user = user
     @file = file
+    @base_url = base_url
   end
 
   def call
     Result.new
+          .map { validate_file }
           .map { create_zip_file }
+          .map { return_file_details }
           .rescue { |error| handle_error(error) }
   end
 
   private
 
-  attr_accessor :user, :file
+  attr_reader :user, :file, :base_url
+
+  def validate_file
+    raise "Invalid file" unless file.present?
+
+    file
+  end
 
   def create_zip_file
     Tempfile.create(["#{zipfile_name}-", ".zip"], binmode: true) do |tempfile|
       tempfile.write(zipfile_buffer.string)
-
-      file_resource = user.file_resources.create!(
-        file: tempfile
-      )
-
-      { zipfile_path: file_resource.file_url, password: generated_password }
+      file_resource.update!(file: tempfile)
     end
+  end
+
+  def file_resource
+    @file_resource ||= user.file_resources.new
   end
 
   def zipfile_buffer
@@ -46,17 +54,18 @@ class SecureZipService
   end
 
   def return_file_details
-    user_dir_path = ["uploads", user.id.to_s].join("/")
-    { zipfile_path: File.join(user_dir_path, zipfile_name), password: generated_password }
+    {
+      link: File.join(base_url, file_resource.file_url),
+      password: generated_password
+    }
+  end
+
+  def handle_error(error)
+    Rails.logger.error("An error occurred while archiving file: #{error.message}")
+    Result.failure(error.message)
   end
 
   def zipfile_name
     @zipfile_name ||= File.basename(file[:filename], File.extname(file[:filename]))
-  end
-
-  # Log the error, notify someone, or perform any other error handling here
-  def handle_error(error)
-    Rails.logger.error("An error occurred while archiving file: #{error.message}")
-    { error: error.message }
   end
 end

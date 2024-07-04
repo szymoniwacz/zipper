@@ -6,12 +6,14 @@ require "zip"
 RSpec.describe SecureZipService, type: :service do
   let(:user) { create(:user) }
   let(:file) { { filename: "example.txt", tempfile: File.open(Rails.root.join("spec/fixtures/example.txt")) } }
-  let(:service) { SecureZipService.new(user:, file:) }
+  let(:base_url) { "http://example.com" }
+  let(:service) { SecureZipService.new(user:, file:, base_url:) }
 
   describe "#initialize" do
-    it "initializes with a user and a file" do
+    it "initializes with a user, file, and base_url" do
       expect(service.instance_variable_get(:@user)).to eq(user)
       expect(service.instance_variable_get(:@file)).to eq(file)
+      expect(service.instance_variable_get(:@base_url)).to eq(base_url)
     end
   end
 
@@ -20,7 +22,7 @@ RSpec.describe SecureZipService, type: :service do
       it "creates a zip file and returns the file details" do
         result = service.call
         expect(result.success?).to be(true)
-        expect(result.value[:zipfile_path]).to be_present
+        expect(result.value[:link]).to be_present
         expect(result.value[:password]).to be_present
       end
     end
@@ -39,11 +41,15 @@ RSpec.describe SecureZipService, type: :service do
   end
 
   describe "#create_zip_file" do
-    it "creates a zip file and returns the file details" do
+    it "creates a zip file and updates the file resource" do
       allow(service).to receive(:generated_password).and_return("testpassword")
-      result = service.send(:create_zip_file)
-      expect(result[:zipfile_path]).to be_present
-      expect(result[:password]).to eq("testpassword")
+      file_resource = service.send(:file_resource)
+      expect(file_resource).to receive(:update!).with(file: instance_of(File))
+
+      service.send(:create_zip_file)
+
+      # Check that the password is set correctly
+      expect(service.send(:generated_password)).to eq("testpassword")
     end
   end
 
@@ -79,12 +85,12 @@ RSpec.describe SecureZipService, type: :service do
   end
 
   describe "#handle_error" do
-    it "logs the error and returns an error hash" do
+    it "logs the error and returns an error result" do
       allow(Rails.logger).to receive(:error)
       error_message = "Test error message"
       result = service.send(:handle_error, StandardError.new(error_message))
-      expect(Rails.logger).to have_received(:error).with("An error occurred while archiving file: #{error_message}")
-      expect(result).to eq({ error: error_message })
+      expect(Rails.logger).to have_received(:error).with("An error occurred while archiving file: Test error message")
+      expect(result.error).to eq("Test error message")
     end
   end
 end

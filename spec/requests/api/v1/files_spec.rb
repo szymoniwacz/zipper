@@ -28,9 +28,9 @@ RSpec.describe "V1::Files API", type: :request do
     let(:file) { fixture_file_upload(Rails.root.join("spec", "fixtures", "example.txt"), "text/plain") }
 
     context "when file uploaded successfully" do
-      let(:zipfile_path) { "zipfile_path" }
-      let(:generated_password) { "generated_password" }
-      let(:success_response) { Result.new({ zipfile_path:, password: generated_password }) }
+      let(:link) { "link" }
+      let(:password) { "password" }
+      let(:success_response) { Result.new(value: { link:, password: }) }
 
       before { allow_any_instance_of(SecureZipService).to receive(:call).and_return(success_response) }
 
@@ -40,22 +40,20 @@ RSpec.describe "V1::Files API", type: :request do
         expect(response).to have_http_status(:created)
 
         response_body = JSON.parse(response.body)
-
-        expect(response_body["link"]).to include(zipfile_path)
-        expect(response_body["password"]).to eq(generated_password)
+        expect(response_body["link"]).to include(link)
+        expect(response_body["password"]).to eq(password)
       end
     end
 
     context "when file upload causes error" do
       let(:error) { RuntimeError.new("Error message") }
-      let(:error_response) { Result.new(nil, error) }
+      let(:error_response) { Result.new(error:) }
 
       before { allow_any_instance_of(SecureZipService).to receive(:call).and_return(error_response) }
 
       it "uploads a file and returns a download link and password" do
         post("/api/v1/files", params: { file: }, headers:)
-
-        expect(response).to have_http_status(:created)
+        expect(response).to have_http_status(422)
 
         response_body = JSON.parse(response.body)
 
