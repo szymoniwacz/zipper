@@ -33,3 +33,4 @@
 docker-compose.yml
 .env
 public/uploads
+/vendor/bundle
