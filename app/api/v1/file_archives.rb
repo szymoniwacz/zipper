@@ -20,14 +20,15 @@ module V1
       end
       get ':id' do
         file_archive = FileArchive.find(params[:id])
-        zipfile_url = File.join(request.base_url.to_s, file_archive.zipfile_path)
 
-        {
-          status: file_archive.status,
-          link: zipfile_url,
-          password: file_archive.password,
-          error: file_archive.error
-        }
+        result = { status: file_archive.status }
+        if file_archive.zipfile_path.present?
+          result[:link] = File.join(request.base_url.to_s, file_archive.zipfile_path)
+          result[:password] = file_archive.password
+        end
+        result[:error] = file_archive.error.presence
+
+        result
       end
     end
   end
