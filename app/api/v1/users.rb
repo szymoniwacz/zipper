@@ -53,16 +53,12 @@ module V1
         requires :password, type: String, desc: "Password", documentation: { example: "password123" }
       end
       post :login do
-        user = User.find_for_authentication(email: params[:email])
-        if user&.valid_password?(params[:password])
-          user.ensure_authentication_token
-          user.save!
-          token = JWT.encode(user.jwt_payload, Rails.application.secrets.secret_key_base, "HS256")
-          status 200
-          { token: }
-        else
-          error!("Unauthorized", 401)
-        end
+        result = UserAuthenticationService.new(params[:email], params[:password]).call
+
+        error!("Unauthorized", 401) unless result.success?
+
+        status 200
+        { token: result.value }
       end
     end
   end
