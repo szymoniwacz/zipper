@@ -42,13 +42,6 @@ module V1
         requires :file, type: File, desc: "File to upload"
       end
       post do
-        # OLD:
-        # result = SecureZipService.new(user: current_user, file: params[:file], base_url: request.base_url).call
-
-        # return result.value if result.success?
-
-        # error!(result.error, 422)
-
         uploaded_file = params[:file]
         file_path = Rails.root.join('tmp', SecureRandom.uuid, uploaded_file[:filename])
         FileUtils.mkdir_p(File.dirname(file_path))
