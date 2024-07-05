@@ -14,13 +14,12 @@ module V1
                                          documentation: { example: "password123" }
       end
       post :register do
-        user = User.new(params)
-        if user.save
-          status 201
-          { message: "User registered successfully." }
-        else
-          error!(user.errors.messages, 422)
-        end
+        user = User.create!(params)
+
+        status 201
+        { message: "User registered successfully." }
+      rescue ActiveRecord::RecordInvalid => error
+        error!(error.message, 422)
       end
 
       desc "Login", {

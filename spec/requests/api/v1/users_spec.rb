@@ -14,13 +14,22 @@ describe "V1::Users API", type: :request do
       end
     end
 
-    context "when some of request parameters are invalid" do
+    context "when some of request parameters are missing" do
       it "returns missing password confirmation error" do
         post "/api/v1/users/register", params: { email: "test@example.com", password: "password123" }
 
         expect(response).to have_http_status(:bad_request)
         expect(json_response["error"]).to eq("Parameter missing or invalid")
         expect(json_response["detail"]).to eq("password_confirmation is missing")
+      end
+    end
+
+    context "when some of request parameters are invalid" do
+      it "returns missing password confirmation error" do
+        post "/api/v1/users/register", params: { email: "test@example.com", password: "password123", password_confirmation: "password" }
+
+        expect(response).to have_http_status(422)
+        expect(json_response["error"]).to eq("Validation failed: Password confirmation doesn't match Password")
       end
     end
   end
