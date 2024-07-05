@@ -43,20 +43,12 @@ module V1
       end
       post do
         uploaded_file = params[:file]
-        file_path = Rails.root.join('tmp', SecureRandom.uuid, uploaded_file[:filename])
-        FileUtils.mkdir_p(File.dirname(file_path))
-        File.open(file_path, 'wb') do |f|
-          f.write(uploaded_file[:tempfile].read)
-        end
+        result = CreateFileArchiveService.new(file: uploaded_file, user: current_user).call
 
-        file_archive = FileArchive.create!(
-          user: current_user,
-          file_path: file_path.to_s,
-          status: 'processing'
-        )
+        return error!(result.error, 422) unless result.success?
 
+        file_archive = result.value
         SecureZipServiceWorker.perform_async(file_archive.id)
-
         archive_url = "#{request.base_url}/api/v1/file_archives/#{file_archive.id}"
 
         { status: 'processing', link: nil, password: nil, archive_url: archive_url }
