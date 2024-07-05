@@ -15,7 +15,6 @@ class SecureZipService
     Result.new
           .map { validate_file }
           .map { create_zip_file }
-          .map { return_file_details }
           .rescue { |error| handle_error(error) }
   end
 
@@ -33,9 +32,7 @@ class SecureZipService
     Tempfile.create([zipfile_name, ".zip"], binmode: true) do |tempfile|
       tempfile.write(zipfile_buffer.string)
 
-      file_resource = user.file_resources.create!(
-        file: tempfile
-      )
+      file_resource.update!(file: tempfile)
 
       file_archive.update!(
         zipfile_path: file_resource.file_url,
@@ -69,13 +66,6 @@ class SecureZipService
 
   def generate_zip_file_path
     Rails.root.join('uploads', 'zips', "#{SecureRandom.uuid}.zip").to_s
-  end
-
-  def return_file_details
-    {
-      link: file_resource.file_url,
-      password: generated_password
-    }
   end
 
   def handle_error(error)
