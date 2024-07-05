@@ -49,8 +49,8 @@ module V1
         produces: ["application/json"]
       }
       params do
-        requires :email, type: String, desc: "Email address"
-        requires :password, type: String, desc: "Password"
+        requires :email, type: String, desc: "Email address", documentation: { example: "user@example.com" }
+        requires :password, type: String, desc: "Password", documentation: { example: "password123" }
       end
       post :login do
         user = User.find_for_authentication(email: params[:email])
