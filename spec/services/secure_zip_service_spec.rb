@@ -89,7 +89,7 @@ RSpec.describe SecureZipService, type: :service do
       allow(Rails.logger).to receive(:error)
       error_message = "Test error message"
       result = service.send(:handle_error, StandardError.new(error_message))
-      expect(Rails.logger).to have_received(:error).with("An error occurred while archiving file: Test error message")
+      expect(Rails.logger).to have_received(:error).with("An error occurred: Test error message")
       expect(result.error).to eq("Test error message")
     end
   end

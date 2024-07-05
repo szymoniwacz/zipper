@@ -3,6 +3,8 @@
 require "zip"
 
 class SecureZipService
+  include ErrorHandler
+
   def initialize(user:, file:, base_url:)
     @user = user
     @file = file
@@ -58,11 +60,6 @@ class SecureZipService
       link: File.join(base_url, file_resource.file_url),
       password: generated_password
     }
-  end
-
-  def handle_error(error)
-    Rails.logger.error("An error occurred while archiving file: #{error.message}")
-    Result.failure(error.message)
   end
 
   def zipfile_name
