@@ -59,6 +59,7 @@ gem "grape-swagger", "~> 2.1"
 gem "grape-swagger-entity", "~> 0.5"
 gem "grape-swagger-rails", "~> 0.5"
 gem "rubyzip", "3.0.0.alpha"
+gem "sidekiq", "~> 7.3"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
@@ -79,4 +80,8 @@ group :development do
 
   # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
   # gem "spring"
+end
+
+group :test do
+  gem 'mock_redis'
 end

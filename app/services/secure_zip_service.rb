@@ -5,23 +5,22 @@ require "zip"
 class SecureZipService
   include ErrorHandler
 
-  def initialize(user:, file:, base_url:)
-    @user = user
-    @file = file
-    @base_url = base_url
+  def initialize(file_archive_id:)
+    @file_archive = FileArchive.find(file_archive_id)
+    @user = @file_archive.user
+    @file = @file_archive.file_path
   end
 
   def call
     Result.new
           .map { validate_file }
           .map { create_zip_file }
-          .map { return_file_details }
           .rescue { |error| handle_error(error) }
   end
 
   private
 
-  attr_reader :user, :file, :base_url
+  attr_accessor :user, :file, :file_archive
 
   def validate_file
     raise "Invalid file" unless file.present?
@@ -30,9 +29,15 @@ class SecureZipService
   end
 
   def create_zip_file
-    Tempfile.create(["#{zipfile_name}-", ".zip"], binmode: true) do |tempfile|
+    Tempfile.create([zipfile_name, ".zip"], binmode: true) do |tempfile|
       tempfile.write(zipfile_buffer.string)
+
       file_resource.update!(file: tempfile)
+
+      file_archive.update!(
+        zipfile_path: file_resource.file_url,
+        status: 'completed'
+      )
     end
   end
 
@@ -40,29 +45,35 @@ class SecureZipService
     @file_resource ||= user.file_resources.new
   end
 
-  def zipfile_buffer
-    @zipfile_buffer ||= Zip::OutputStream.write_buffer(encrypter:) do |zos|
-      zos.put_next_entry(File.basename(file[:filename]))
-      zos.write(file[:tempfile].read)
-    end
-  end
-
-  def encrypter
-    @encrypter ||= Zip::TraditionalEncrypter.new(generated_password)
-  end
-
   def generated_password
     @generated_password ||= SecureRandom.hex(10)
   end
 
-  def return_file_details
-    {
-      link: File.join(base_url, file_resource.file_url),
-      password: generated_password
-    }
+  def zipfile_name
+    @zipfile_name ||= File.basename(file, File.extname(file))
   end
 
-  def zipfile_name
-    @zipfile_name ||= File.basename(file[:filename], File.extname(file[:filename]))
+  def zipfile_buffer
+    @zipfile_buffer ||= Zip::OutputStream.write_buffer(encrypter:) do |zos|
+      zos.put_next_entry(File.basename(file))
+      zos.write(File.read(file))
+    end
+  end
+
+  def encrypter
+    @encrypter ||= Zip::TraditionalEncrypter.new(file_archive.password)
+  end
+
+  def generate_zip_file_path
+    Rails.root.join('uploads', 'zips', "#{SecureRandom.uuid}.zip").to_s
+  end
+
+  def handle_error(error)
+    file_archive.update!(
+      error: error.message,
+      status: 'failed'
+    )
+
+    super
   end
 end

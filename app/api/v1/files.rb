@@ -26,8 +26,11 @@ module V1
 
       desc "Upload a file" do
         success type: Hash do
-          property :link, type: String, desc: "URL to the zipped file"
-          property :password, type: String, desc: "Password for the zipped file"
+          property :status, type: String, desc: "Status of the file archive"
+          property :link, type: String, desc: "URL to the zipped file", nullable: true
+          property :password, type: String, desc: "Password for the zipped file", nullable: true
+          property :error, type: String, desc: "Error message if any", nullable: true
+          property :archive_url, type: String, desc: "URL to check the status of the file archive"
         end
         consumes "multipart/form-data"
         headers "Authorization" => {
@@ -39,11 +42,16 @@ module V1
         requires :file, type: File, desc: "File to upload"
       end
       post do
-        result = SecureZipService.new(user: current_user, file: params[:file], base_url: request.base_url).call
+        uploaded_file = params[:file]
+        result = CreateFileArchiveService.new(file: uploaded_file, user: current_user).call
 
-        return result.value if result.success?
+        return error!(result.error, 422) unless result.success?
 
-        error!(result.error, 422)
+        file_archive = result.value
+        SecureZipServiceWorker.perform_async(file_archive.id)
+        archive_url = "#{request.base_url}/api/v1/file_archives/#{file_archive.id}"
+
+        { status: 'processing', link: nil, password: nil, archive_url: archive_url }
       end
     end
   end

@@ -43,6 +43,23 @@ module V1
           error!("Unauthorized", 401)
         end
       end
+
+      desc "Login", {
+        consumes: ["application/json"],
+        produces: ["application/json"]
+      }
+      params do
+        requires :email, type: String, desc: "Email address", documentation: { example: "user@example.com" }
+        requires :password, type: String, desc: "Password", documentation: { example: "password123" }
+      end
+      post :login do
+        result = UserAuthenticationService.new(params[:email], params[:password]).call
+
+        error!("Unauthorized", 401) unless result.success?
+
+        status 200
+        { token: result.value }
+      end
     end
   end
 end
