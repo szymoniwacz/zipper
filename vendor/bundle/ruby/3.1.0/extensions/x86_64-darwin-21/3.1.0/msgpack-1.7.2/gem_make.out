@@ -1,0 +1,8 @@
+current directory: /Users/szymoniwacz/Projects/zipper/vendor/bundle/ruby/3.1.0/gems/msgpack-1.7.2/ext/msgpack
+/Users/szymoniwacz/.rvm/rubies/ruby-3.1.0/bin/ruby -I /Users/szymoniwacz/.rvm/rubies/ruby-3.1.0/lib/ruby/3.1.0 -r ./siteconf20240727-69221-lffh19.rb extconf.rb
+current directory: /Users/szymoniwacz/Projects/zipper/vendor/bundle/ruby/3.1.0/gems/msgpack-1.7.2/ext/msgpack
+make DESTDIR\= clean
+current directory: /Users/szymoniwacz/Projects/zipper/vendor/bundle/ruby/3.1.0/gems/msgpack-1.7.2/ext/msgpack
+make DESTDIR\=
+current directory: /Users/szymoniwacz/Projects/zipper/vendor/bundle/ruby/3.1.0/gems/msgpack-1.7.2/ext/msgpack
+make DESTDIR\= install

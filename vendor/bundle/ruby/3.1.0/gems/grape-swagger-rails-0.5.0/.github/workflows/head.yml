@@ -1,0 +1,32 @@
+name: Tests (HEAD)
+on: [pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        entry:
+          - { ruby: "3.2", grape-swagger: "HEAD" }
+          - { ruby: "ruby-head", grape-swagger: "HEAD" }
+          - { ruby: "jruby-head", grape-swagger: "HEAD" }
+    env:
+      GRAPE_SWAGGER_VERSION: ${{ matrix.entry.grape-swagger }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.entry.ruby }}
+          bundler-cache: true
+      - name: Setup Firefox
+        uses: browser-actions/setup-firefox@v1
+        with:
+          firefox-version: "111.0.1"
+      - uses: browser-actions/setup-geckodriver@latest
+        with:
+          geckodriver-version: "0.32.2"
+      - uses: coactions/setup-xvfb@v1
+        with:
+          run: bundle exec rake spec

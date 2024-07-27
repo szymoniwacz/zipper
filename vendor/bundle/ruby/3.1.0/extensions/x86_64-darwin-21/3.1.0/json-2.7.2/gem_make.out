@@ -1,0 +1,8 @@
+current directory: /Users/szymoniwacz/Projects/zipper/vendor/bundle/ruby/3.1.0/gems/json-2.7.2/ext/json
+/Users/szymoniwacz/.rvm/rubies/ruby-3.1.0/bin/ruby -I /Users/szymoniwacz/.rvm/rubies/ruby-3.1.0/lib/ruby/3.1.0 -r ./siteconf20240727-69221-htdiwe.rb extconf.rb
+current directory: /Users/szymoniwacz/Projects/zipper/vendor/bundle/ruby/3.1.0/gems/json-2.7.2/ext/json
+make DESTDIR\= clean
+current directory: /Users/szymoniwacz/Projects/zipper/vendor/bundle/ruby/3.1.0/gems/json-2.7.2/ext/json
+make DESTDIR\=
+current directory: /Users/szymoniwacz/Projects/zipper/vendor/bundle/ruby/3.1.0/gems/json-2.7.2/ext/json
+make DESTDIR\= install

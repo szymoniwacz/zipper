@@ -8,18 +8,18 @@ module V1
         produces: ["application/json"]
       }
       params do
-        requires :email, type: String, desc: "Email address"
-        requires :password, type: String, desc: "Password"
-        requires :password_confirmation, type: String, desc: "Password confirmation"
+        requires :email, type: String, desc: "Email address", documentation: { example: "user@example.com" }
+        requires :password, type: String, desc: "Password", documentation: { example: "password123" }
+        requires :password_confirmation, type: String, desc: "Password confirmation",
+                                         documentation: { example: "password123" }
       end
       post :register do
-        user = User.new(params)
-        if user.save
-          status 201
-          { message: "User registered successfully." }
-        else
-          error!(user.errors.messages, 422)
-        end
+        user = User.create!(params)
+
+        status 201
+        { message: "User registered successfully." }
+      rescue ActiveRecord::RecordInvalid => error
+        error!(error.message, 422)
       end
 
       desc "Login", {
@@ -27,8 +27,8 @@ module V1
         produces: ["application/json"]
       }
       params do
-        requires :email, type: String, desc: "Email address"
-        requires :password, type: String, desc: "Password"
+        requires :email, type: String, desc: "Email address", documentation: { example: "user@example.com" }
+        requires :password, type: String, desc: "Password", documentation: { example: "password123" }
       end
       post :login do
         user = User.find_for_authentication(email: params[:email])
@@ -37,6 +37,7 @@ module V1
           user.save!
           token = JWT.encode(user.jwt_payload, Rails.application.secrets.secret_key_base, "HS256")
           status 200
+
           { token: }
         else
           error!("Unauthorized", 401)
