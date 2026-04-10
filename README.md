@@ -1,6 +1,7 @@
-# README
+# ZIPPER
 
-This README documents the necessary steps to get the application up and running, including API enhancements and new features.
+A minimal file upload API written in Ruby, providing basic authentication and simple endpoints for handling file uploads.  
+Created for educational and demonstration purposes.
 
 ## Ruby Version
 
@@ -66,3 +67,7 @@ For any additional setup or configuration, refer to the official Rails documenta
 
 - OpenAPI documentation for the API endpoints.
 - Documentation available at `/api/docs` rendered with Swagger UI.
+
+## Project context
+
+This project was created as a learning exercise (mini API backend / coding kata). Not production ready.
